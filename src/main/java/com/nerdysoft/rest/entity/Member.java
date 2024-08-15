@@ -1,6 +1,8 @@
 package com.nerdysoft.rest.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -8,22 +10,22 @@ import java.time.LocalDate;
 public class Member {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
+
+    @NotBlank
+    private String name;
+
     @Column(name = "membership_date")
+    @NotNull
     private LocalDate membershipDate;
 
     public Member() {
     }
 
-    public Member(int id, String firstName, String lastName, LocalDate membershipDate) {
+    public Member(int id, String name, LocalDate membershipDate) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.membershipDate = membershipDate;
     }
 
@@ -35,20 +37,12 @@ public class Member {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public LocalDate getMembershipDate() {
@@ -63,8 +57,7 @@ public class Member {
     public String toString() {
         return "Member{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                ", name='" + name + '\'' +
                 ", membershipDate=" + membershipDate +
                 '}';
     }

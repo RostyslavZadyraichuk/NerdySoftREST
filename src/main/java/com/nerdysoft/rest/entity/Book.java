@@ -1,15 +1,26 @@
 package com.nerdysoft.rest.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Entity(name = "book")
 public class Book {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NotBlank
+    @Pattern(regexp = "(^[A-Z].{2,}$)")
     private String title;
-    private int amount;
+
+    @Min(0)
+    private int amount = 1;
+
+    @NotNull
     @ManyToOne
     private Author author;
 
