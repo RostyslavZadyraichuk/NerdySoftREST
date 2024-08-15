@@ -1,19 +1,18 @@
 package com.nerdysoft.rest.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "author")
-public class Author {
+public class Author implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
-    @Pattern(regexp = "(^[A-Z][a-z]{2,}\\s[A-Z][a-z]{2,}$)")
+    @Column(unique = true, nullable = false)
     private String name;
 
     public Author() {
@@ -40,11 +39,4 @@ public class Author {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Author{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

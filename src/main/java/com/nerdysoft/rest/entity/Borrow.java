@@ -1,20 +1,19 @@
 package com.nerdysoft.rest.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+
+import java.io.Serializable;
 
 @Entity(name = "borrow")
-public class Borrow {
+public class Borrow implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
     @ManyToOne
     private Book book;
 
-    @NotNull
     @ManyToOne
     private Member member;
 
@@ -51,12 +50,4 @@ public class Borrow {
         this.member = member;
     }
 
-    @Override
-    public String toString() {
-        return "Borrow{" +
-                "id=" + id +
-                ", book=" + book +
-                ", member=" + member +
-                '}';
-    }
 }

@@ -1,27 +1,22 @@
-package com.nerdysoft.rest.entity;
+package com.nerdysoft.rest.dto;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-@Entity(name = "member")
-public class Member implements Serializable {
+public class MemberDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Member can't have empty name")
     private String name;
 
-    @Column(name = "membership_date", nullable = false)
     private LocalDate membershipDate;
 
-    public Member() {
+    public MemberDTO() {
     }
 
-    public Member(int id, String name, LocalDate membershipDate) {
+    public MemberDTO(int id, String name, LocalDate membershipDate) {
         this.id = id;
         this.name = name;
         this.membershipDate = membershipDate;
@@ -51,4 +46,12 @@ public class Member implements Serializable {
         this.membershipDate = membershipDate;
     }
 
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", membershipDate=" + membershipDate +
+                '}';
+    }
 }

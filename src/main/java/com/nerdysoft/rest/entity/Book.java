@@ -1,26 +1,22 @@
 package com.nerdysoft.rest.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+
+import java.io.Serializable;
 
 @Entity(name = "book")
-public class Book {
+public class Book implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank
-    @Pattern(regexp = "(^[A-Z].{2,}$)")
+    @Column(nullable = false)
     private String title;
 
-    @Min(0)
+    @Column(nullable = false)
     private int amount = 1;
 
-    @NotNull
     @ManyToOne
     private Author author;
 
@@ -65,13 +61,4 @@ public class Book {
         this.author = author;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", amount=" + amount +
-                ", author=" + author +
-                '}';
-    }
 }
