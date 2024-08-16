@@ -15,9 +15,12 @@ public interface BorrowService {
 
     List<BorrowDTO> findAll();
 
+    Optional<BorrowDTO> findById(BorrowDTO borrow);
+
     List<BorrowDTO> findByMember(MemberDTO member);
 
     List<BorrowDTO> findByBook(BookDTO book);
 
     Optional<BorrowDTO> findFirstByMemberAndBook(MemberDTO member, BookDTO book);
+
 }

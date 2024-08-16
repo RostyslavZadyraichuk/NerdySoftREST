@@ -3,6 +3,7 @@ package com.nerdysoft.rest.repository;
 import com.nerdysoft.rest.entity.Author;
 import com.nerdysoft.rest.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +18,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findByTitle(String title);
 
+    @Query("SELECT DISTINCT new com.nerdysoft.rest.entity.Book(b.title) FROM book b")
+    List<Book> findAllDistinctBooks();
+
+    @Query("SELECT new com.nerdysoft.rest.entity.Book(b.title, COUNT(br.id)) " +
+        "FROM book b RIGHT JOIN borrow br ON b.id = br.book.id " +
+        "GROUP BY b.title")
+    List<Book> findAllDistinctBorrowedBooks();
 }

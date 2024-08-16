@@ -23,6 +23,15 @@ public class Book implements Serializable {
     public Book() {
     }
 
+    public Book(String title) {
+        this.title = title;
+    }
+
+    public Book(String title, long borrowedCount) {
+        this.title = title;
+        this.amount = (int) borrowedCount;
+    }
+
     public Book(int id, String title, int amount) {
         this.id = id;
         this.title = title;

@@ -3,7 +3,6 @@ package com.nerdysoft.rest.service.impl;
 import com.nerdysoft.rest.dto.AuthorDTO;
 import com.nerdysoft.rest.dto.BookDTO;
 import com.nerdysoft.rest.dto.BorrowDTO;
-import com.nerdysoft.rest.entity.Author;
 import com.nerdysoft.rest.entity.Book;
 import com.nerdysoft.rest.error.DatabaseOperationException;
 import com.nerdysoft.rest.repository.BookRepository;
@@ -13,7 +12,6 @@ import com.nerdysoft.rest.service.BorrowService;
 import com.nerdysoft.rest.service.mapper.AuthorMapper;
 import com.nerdysoft.rest.service.mapper.BookMapper;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -119,5 +117,19 @@ public class BookServiceImpl implements BookService {
             return Optional.of(bookMapper.toDTO(found.get()));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<BookDTO> findAllDistinct() {
+        return bookRepo.findAllDistinctBooks().stream()
+                .map(bookMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<BookDTO> findAllBorrowedDistinct() {
+        return bookRepo.findAllDistinctBorrowedBooks().stream()
+                .map(bookMapper::toDTO)
+                .toList();
     }
 }

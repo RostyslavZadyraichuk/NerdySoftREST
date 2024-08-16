@@ -6,11 +6,15 @@ import com.nerdysoft.rest.dto.MemberDTO;
 import com.nerdysoft.rest.entity.Book;
 import com.nerdysoft.rest.entity.Borrow;
 import com.nerdysoft.rest.entity.Member;
+import com.nerdysoft.rest.error.DatabaseOperationException;
 import com.nerdysoft.rest.repository.BorrowRepository;
+import com.nerdysoft.rest.service.BookService;
 import com.nerdysoft.rest.service.BorrowService;
+import com.nerdysoft.rest.service.MemberService;
 import com.nerdysoft.rest.service.mapper.BookMapper;
 import com.nerdysoft.rest.service.mapper.BorrowMapper;
 import com.nerdysoft.rest.service.mapper.MemberMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,27 +27,57 @@ public class BorrowServiceImpl implements BorrowService {
     private BorrowMapper borrowMapper;
     private MemberMapper memberMapper;
     private BookMapper bookMapper;
+    private MemberService memberService;
+    private BookService bookService;
 
     public BorrowServiceImpl(BorrowRepository borrowRepo,
                              BorrowMapper borrowMapper,
                              MemberMapper memberMapper,
-                             BookMapper bookMapper) {
+                             BookMapper bookMapper,
+                             @Lazy MemberService memberService,
+                             @Lazy BookService bookService) {
         this.borrowRepo = borrowRepo;
         this.borrowMapper = borrowMapper;
         this.memberMapper = memberMapper;
         this.bookMapper = bookMapper;
+        this.memberService = memberService;
+        this.bookService = bookService;
     }
 
     @Override
     public BorrowDTO create(BorrowDTO borrow) {
+        Optional<BookDTO> bookOpt = bookService.findByTitleAndAuthor(
+                borrow.getBook().getTitle(), borrow.getBook().getAuthor());
+        if (bookOpt.isEmpty()) {
+            throw new DatabaseOperationException(String.format("Book with title %s and author %s not found",
+                    borrow.getBook().getTitle(), borrow.getBook().getAuthor()));
+        }
+
+        Optional<MemberDTO> memberOpt = memberService.findByName(borrow.getMember().getName());
+        if (memberOpt.isEmpty()) {
+            throw new DatabaseOperationException(String.format("Member with name %s not found",
+                    borrow.getMember().getName()));
+        }
+
+        BookDTO book = bookOpt.get();
+        MemberDTO member = memberOpt.get();
+
+        memberService.borrowBook(member, book);
+        borrow.setBook(book);
+        borrow.setMember(member);
         Borrow entity = borrowMapper.toEntity(borrow);
         return borrowMapper.toDTO(borrowRepo.save(entity));
     }
 
     @Override
     public void delete(BorrowDTO borrow) {
-        Borrow entity = borrowMapper.toEntity(borrow);
-        borrowRepo.delete(entity);
+        Optional<BorrowDTO> optional = findById(borrow);
+        if (optional.isPresent()) {
+            BorrowDTO borrowDTO = optional.get();
+            memberService.returnBook(borrowDTO.getMember(), borrowDTO.getBook());
+            Borrow entity = borrowMapper.toEntity(borrow);
+            borrowRepo.delete(entity);
+        }
     }
 
     @Override
@@ -54,9 +88,18 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
+    public Optional<BorrowDTO> findById(BorrowDTO borrow) {
+        Optional<Borrow> optional = borrowRepo.findById(borrow.getId());
+        if (optional.isPresent()) {
+            return Optional.of(borrowMapper.toDTO(optional.get()));
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<BorrowDTO> findByMember(MemberDTO member) {
         Member entity = memberMapper.toEntity(member);
-        return borrowRepo.findByMember(entity).stream()
+        return borrowRepo.findByMemberName(entity.getName()).stream()
                 .map(borrowMapper::toDTO)
                 .toList();
     }
@@ -64,7 +107,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Override
     public List<BorrowDTO> findByBook(BookDTO book) {
         Book entity = bookMapper.toEntity(book);
-        return borrowRepo.findByBook(entity).stream()
+        return borrowRepo.findByBookTitle(entity.getTitle()).stream()
                 .map(borrowMapper::toDTO)
                 .toList();
     }
@@ -73,7 +116,8 @@ public class BorrowServiceImpl implements BorrowService {
     public Optional<BorrowDTO> findFirstByMemberAndBook(MemberDTO member, BookDTO book) {
         Member memberEntity = memberMapper.toEntity(member);
         Book bookEntity = bookMapper.toEntity(book);
-        Optional<Borrow> optional = borrowRepo.findFirstByMemberAndBook(memberEntity, bookEntity);
+        Optional<Borrow> optional = borrowRepo.findFirstByMemberNameAndBookTitle(
+                memberEntity.getName(), bookEntity.getTitle());
         if (optional.isPresent()) {
             return Optional.of(borrowMapper.toDTO(optional.get()));
         }

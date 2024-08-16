@@ -23,4 +23,8 @@ public interface BookService {
     List<BookDTO> findByTitle(String title);
 
     Optional<BookDTO> findByTitleAndAuthor(String title, AuthorDTO author);
+
+    List<BookDTO> findAllDistinct();
+
+    List<BookDTO> findAllBorrowedDistinct();
 }

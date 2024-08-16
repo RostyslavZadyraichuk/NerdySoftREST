@@ -102,10 +102,6 @@ public class MemberServiceImpl implements MemberService {
                     member.getName(), maxBorrowAmount));
         }
 
-        BorrowDTO borrow = new BorrowDTO();
-        borrow.setMember(member);
-        borrow.setBook(book);
-        borrowService.create(borrow);
         book.setAmount(book.getAmount() - 1);
         bookService.update(book);
     }
@@ -114,8 +110,6 @@ public class MemberServiceImpl implements MemberService {
     public void returnBook(MemberDTO member, BookDTO book) {
         Optional<BorrowDTO> optional = borrowService.findFirstByMemberAndBook(member, book);
         if (optional.isPresent()) {
-            BorrowDTO borrow = optional.get();
-            borrowService.delete(borrow);
             book.setAmount(book.getAmount() + 1);
             bookService.update(book);
         }
