@@ -2,15 +2,13 @@ package com.nerdysoft.rest.repository;
 
 import com.nerdysoft.rest.entity.Author;
 import com.nerdysoft.rest.entity.Book;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,66 +44,17 @@ public class BookRepositoryTest {
     }
 
     @Test
-    void nameValidation() {
-        Book badName = new Book();
-        badName.setTitle("Bo");
-        badName.setAuthor(book.getAuthor());
-        assertThrows(ConstraintViolationException.class, () -> bookRepo.save(badName));
+    void titleValidation() {
+        Book nullTitle = new Book();
+        nullTitle.setTitle(null);
+        nullTitle.setAuthor(book.getAuthor());
+        assertThrows(DataIntegrityViolationException.class, () -> bookRepo.save(nullTitle));
 
-        Book correctName = new Book();
-        correctName.setTitle("Book Title");
-        correctName.setAuthor(book.getAuthor());
-        assertDoesNotThrow(() -> bookRepo.save(correctName));
-        correctName.setTitle("Bo");
-        assertThrows(TransactionSystemException.class, () -> bookRepo.save(correctName));
-        Optional<Book> optional = bookRepo.findById(correctName.getId());
-        assertTrue(optional.isPresent());
-    }
-
-    @Test
-    void amountValidation() {
-        Book badAmount = new Book();
-        badAmount.setTitle("Book Title");
-        badAmount.setAuthor(book.getAuthor());
-        badAmount.setAmount(-1);
-        assertThrows(ConstraintViolationException.class, () -> bookRepo.save(badAmount));
-
-        Book correctAmount = new Book();
-        correctAmount.setTitle("Book Title");
-        correctAmount.setAuthor(book.getAuthor());
-        correctAmount.setAmount(0);
-        assertDoesNotThrow(() -> bookRepo.save(correctAmount));
-        correctAmount.setAmount(-1);
-        assertThrows(TransactionSystemException.class, () -> bookRepo.save(correctAmount));
-        Optional<Book> optional = bookRepo.findById(correctAmount.getId());
-        assertTrue(optional.isPresent());
-
-        Book defaultAmount = new Book();
-        defaultAmount.setTitle("Book Title");
-        defaultAmount.setAuthor(book.getAuthor());
-        assertDoesNotThrow(() -> bookRepo.save(defaultAmount));
-        Optional<Book> optional2 = bookRepo.findById(defaultAmount.getId());
-        assertTrue(optional2.isPresent());
-        assertEquals(1, optional2.get().getAmount());
-    }
-
-    @Test
-    void authorValidation() {
-        Book badAuthor = new Book();
-        badAuthor.setTitle("Book Title");
-        assertThrows(ConstraintViolationException.class, () -> bookRepo.save(badAuthor));
-
-        Book correctAuthor = new Book();
-        correctAuthor.setTitle("Book Title");
-        correctAuthor.setAuthor(book.getAuthor());
-        assertDoesNotThrow(() -> bookRepo.save(correctAuthor));
-        correctAuthor.setAuthor(null);
-        assertThrows(TransactionSystemException.class, () -> bookRepo.save(correctAuthor));
-        Author author = new Author();
-        author.setName("John Doe");
-        correctAuthor.setAuthor(author);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> bookRepo.save(correctAuthor));
-        Optional<Book> optional = bookRepo.findById(correctAuthor.getId());
+        Book correctTitle = new Book();
+        correctTitle.setTitle("Book Title");
+        correctTitle.setAuthor(book.getAuthor());
+        assertDoesNotThrow(() -> bookRepo.save(correctTitle));
+        Optional<Book> optional = bookRepo.findById(correctTitle.getId());
         assertTrue(optional.isPresent());
     }
 

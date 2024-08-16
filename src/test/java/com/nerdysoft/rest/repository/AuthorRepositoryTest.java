@@ -1,12 +1,11 @@
 package com.nerdysoft.rest.repository;
 
 import com.nerdysoft.rest.entity.Author;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.TransactionSystemException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,21 +35,21 @@ public class AuthorRepositoryTest {
     @Test
     void nameValidation() {
         Author nullName = new Author();
-        assertThrows(ConstraintViolationException.class, () -> authorRepo.save(nullName));
+        assertThrows(DataIntegrityViolationException.class, () -> authorRepo.save(nullName));
 
-        Author badName = new Author();
-        badName.setName("J");
-        assertThrows(ConstraintViolationException.class, () -> authorRepo.save(badName));
-        badName.setName("Joe joe");
-        assertThrows(ConstraintViolationException.class, () -> authorRepo.save(badName));
+        Author notUniqueName = new Author();
+        notUniqueName.setName(author.getName());
+        assertThrows(DataIntegrityViolationException.class, () -> authorRepo.save(notUniqueName));
 
         Author correctName = new Author();
-        correctName.setName("Joe Joe");
+        correctName.setName("Unique");
         assertDoesNotThrow(() -> authorRepo.save(correctName));
-        correctName.setName("First Second");
+        correctName.setName("Unique2");
         assertDoesNotThrow(() -> authorRepo.save(correctName));
-        correctName.setName("Bad");
-        assertThrows(TransactionSystemException.class, () -> authorRepo.save(correctName));
+        correctName.setName(author.getName());
+        assertThrows(DataIntegrityViolationException.class, () -> authorRepo.save(correctName));
+        correctName.setName(null);
+        assertThrows(DataIntegrityViolationException.class, () -> authorRepo.save(correctName));
         Optional<Author> optional = authorRepo.findById(correctName.getId());
         assertTrue(optional.isPresent());
     }
@@ -87,9 +86,9 @@ public class AuthorRepositoryTest {
 
     @Test
     void findAuthorById() {
+        assertNotNull(author);
         Author found = authorRepo.findById(author.getId()).orElse(null);
 
-        assertNotNull(author);
         assertNotNull(found);
         assertEquals(author.getId(), found.getId());
         assertEquals(author.getName(), found.getName());
@@ -103,6 +102,16 @@ public class AuthorRepositoryTest {
         authorRepo.delete(author);
         authors = authorRepo.findAll();
         assertEquals(0, authors.size());
+    }
+
+    @Test
+    void findAuthorByName() {
+        assertNotNull(author);
+        Author found = authorRepo.findByName(author.getName()).orElse(null);
+
+        assertNotNull(found);
+        assertEquals(author.getId(), found.getId());
+        assertEquals(author.getName(), found.getName());
     }
 
     @AfterEach

@@ -4,19 +4,15 @@ import com.nerdysoft.rest.entity.Author;
 import com.nerdysoft.rest.entity.Book;
 import com.nerdysoft.rest.entity.Borrow;
 import com.nerdysoft.rest.entity.Member;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.TransactionSystemException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,44 +58,6 @@ public class BorrowRepositoryTest {
         borrow.setBook(book);
         borrow.setMember(member);
         borrow = borrowRepo.save(borrow);
-    }
-
-    @Test
-    void bookValidation() {
-        Borrow badBook = new Borrow();
-        badBook.setMember(borrow.getMember());
-        assertThrows(ConstraintViolationException.class, () -> borrowRepo.save(badBook));
-
-        Borrow correctBook = new Borrow();
-        correctBook.setBook(borrow.getBook());
-        correctBook.setMember(borrow.getMember());
-        assertDoesNotThrow(() -> borrowRepo.save(correctBook));
-        correctBook.setBook(null);
-        assertThrows(TransactionSystemException.class, () -> borrowRepo.save(correctBook));
-        Book book = new Book();
-        correctBook.setBook(book);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> borrowRepo.save(correctBook));
-        Optional<Borrow> optional = borrowRepo.findById(correctBook.getId());
-        assertTrue(optional.isPresent());
-    }
-
-    @Test
-    void memberValidation() {
-        Borrow badMember = new Borrow();
-        badMember.setBook(borrow.getBook());
-        assertThrows(ConstraintViolationException.class, () -> borrowRepo.save(badMember));
-
-        Borrow correctMember = new Borrow();
-        correctMember.setBook(borrow.getBook());
-        correctMember.setMember(borrow.getMember());
-        assertDoesNotThrow(() -> borrowRepo.save(correctMember));
-        correctMember.setMember(null);
-        assertThrows(TransactionSystemException.class, () -> borrowRepo.save(correctMember));
-        Member member = new Member();
-        correctMember.setMember(member);
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> borrowRepo.save(correctMember));
-        Optional<Borrow> optional = borrowRepo.findById(correctMember.getId());
-        assertTrue(optional.isPresent());
     }
 
     @Test

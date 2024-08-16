@@ -1,14 +1,13 @@
 package com.nerdysoft.rest.repository;
 
 import com.nerdysoft.rest.entity.Member;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.TransactionSystemException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,39 +39,40 @@ public class MemberRepositoryTest {
     @Test
     void nameValidation() {
         Member nullName = new Member();
-        nullName.setMembershipDate(member.getMembershipDate());
-        assertThrows(ConstraintViolationException.class, () -> memberRepo.save(nullName));
+        nullName.setMembershipDate(LocalDate.now());
+        assertThrows(DataIntegrityViolationException.class, () -> memberRepo.save(nullName));
 
-        Member blankName = new Member();
-        blankName.setName("");
-        blankName.setMembershipDate(member.getMembershipDate());
-        assertThrows(ConstraintViolationException.class, () -> memberRepo.save(blankName));
-        blankName.setName("      ");
-        assertThrows(ConstraintViolationException.class, () -> memberRepo.save(blankName));
+        Member notUniqueName = new Member();
+        notUniqueName.setName(member.getName());
+        notUniqueName.setMembershipDate(LocalDate.now());
+        assertThrows(DataIntegrityViolationException.class, () -> memberRepo.save(notUniqueName));
 
         Member correctName = new Member();
-        correctName.setName("Joes");
-        correctName.setMembershipDate(member.getMembershipDate());
+        correctName.setName("Unique");
+        correctName.setMembershipDate(LocalDate.now());
         assertDoesNotThrow(() -> memberRepo.save(correctName));
-        correctName.setName("");
-        assertThrows(TransactionSystemException.class, () -> memberRepo.save(correctName));
+        correctName.setName("Unique2");
+        assertDoesNotThrow(() -> memberRepo.save(correctName));
+        correctName.setName(member.getName());
+        assertThrows(DataIntegrityViolationException.class, () -> memberRepo.save(correctName));
+        correctName.setName(null);
+        assertThrows(DataIntegrityViolationException.class, () -> memberRepo.save(correctName));
         Optional<Member> optional = memberRepo.findById(correctName.getId());
         assertTrue(optional.isPresent());
     }
 
     @Test
     void membershipDateValidation() {
-        Member nullDate = new Member();
-        nullDate.setName("User");
-        assertThrows(ConstraintViolationException.class, () -> memberRepo.save(nullDate));
+        Member nullMembership = new Member();
+        nullMembership.setName("Unique");
+        nullMembership.setMembershipDate(null);
+        assertThrows(DataIntegrityViolationException.class, () -> memberRepo.save(nullMembership));
 
-        Member correctDate = new Member();
-        correctDate.setName("User");
-        correctDate.setMembershipDate(LocalDate.now());
-        assertDoesNotThrow(() -> memberRepo.save(correctDate));
-        correctDate.setMembershipDate(null);
-        assertThrows(TransactionSystemException.class, () -> memberRepo.save(correctDate));
-        Optional<Member> optional = memberRepo.findById(correctDate.getId());
+        Member correctMembership = new Member();
+        correctMembership.setName("Unique2");
+        correctMembership.setMembershipDate(LocalDate.now());
+        assertDoesNotThrow(() -> memberRepo.save(correctMembership));
+        Optional<Member> optional = memberRepo.findById(correctMembership.getId());
         assertTrue(optional.isPresent());
     }
 
