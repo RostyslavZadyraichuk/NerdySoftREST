@@ -35,7 +35,7 @@ public class BorrowController {
     }
 
     @PostMapping("/borrow/create")
-    public ResponseEntity<String> createBorrow(@RequestBody @Valid BorrowDTO borrow,
+    public ResponseEntity<String> createBorrow(@RequestBody BorrowDTO borrow,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());

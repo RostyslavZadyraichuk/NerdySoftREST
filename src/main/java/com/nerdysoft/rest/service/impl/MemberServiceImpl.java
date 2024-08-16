@@ -10,6 +10,7 @@ import com.nerdysoft.rest.service.BookService;
 import com.nerdysoft.rest.service.BorrowService;
 import com.nerdysoft.rest.service.MemberService;
 import com.nerdysoft.rest.service.mapper.MemberMapper;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +26,6 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper memberMapper;
     private BorrowService borrowService;
 
-    @Value("${max.borrow.amount}")
-    private int maxBorrowAmount;
-
     public MemberServiceImpl(MemberRepository memberRepo,
                              BookService bookService,
                              MemberMapper memberMapper,
@@ -39,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO create(MemberDTO member) {
+    public MemberDTO create(@Valid MemberDTO member) {
         Optional<Member> optional = memberRepo.findByName(member.getName());
         if (optional.isPresent()) {
             throw new DatabaseOperationException(String.format("Member with name %s already exists",
@@ -52,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO update(MemberDTO member) {
+    public MemberDTO update(@Valid MemberDTO member) {
         Optional<Member> optional = memberRepo.findByName(member.getName());
         if (optional.isPresent()) {
             throw new DatabaseOperationException(String.format("Member with name %s already exists",
@@ -91,34 +89,24 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void borrowBook(MemberDTO member, BookDTO book) throws DatabaseOperationException {
-        if (book.getAmount() == 0) {
-            throw new DatabaseOperationException(String.format("Book's %s amount is zero",
-                    book.getTitle()));
-        }
-
-        List<BorrowDTO> borrowed = borrowService.findByMember(member);
-        if (borrowed.size() == maxBorrowAmount) {
-            throw new DatabaseOperationException(String.format("Member %s already has %d borrowed books",
-                    member.getName(), maxBorrowAmount));
-        }
-
-        book.setAmount(book.getAmount() - 1);
-        bookService.update(book);
+        BorrowDTO borrow = new BorrowDTO();
+        borrow.setMember(member);
+        borrow.setBook(book);
+        borrowService.create(borrow);
     }
 
     @Override
     public void returnBook(MemberDTO member, BookDTO book) {
         Optional<BorrowDTO> optional = borrowService.findFirstByMemberAndBook(member, book);
         if (optional.isPresent()) {
-            book.setAmount(book.getAmount() + 1);
-            bookService.update(book);
+            borrowService.delete(optional.get());
         }
     }
 
     @Override
     public void deleteAll() throws DatabaseOperationException {
-        List<BorrowDTO> borrowed = borrowService.findAll();
-        if (!borrowed.isEmpty()) {
+        List<BorrowDTO> borrows = borrowService.findAll();
+        if (!borrows.isEmpty()) {
             throw new DatabaseOperationException("Borrow table isn't empty");
         }
         memberRepo.deleteAll();

@@ -8,6 +8,7 @@ import com.nerdysoft.rest.repository.AuthorRepository;
 import com.nerdysoft.rest.service.AuthorService;
 import com.nerdysoft.rest.service.BookService;
 import com.nerdysoft.rest.service.mapper.AuthorMapper;
+import jakarta.validation.Valid;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public AuthorDTO create(AuthorDTO author) {
+    public AuthorDTO create(@Valid AuthorDTO author) {
         Author entity = authorMapper.toEntity(author);
         return authorMapper.toDTO(authorRepo.save(entity));
     }
@@ -66,7 +67,8 @@ public class AuthorServiceImpl implements AuthorService {
     public void deleteAll() {
         List<BookDTO> books = bookService.findAll();
         if (!books.isEmpty()) {
-            throw new DatabaseOperationException("Book's table is not empty");
+            throw new DatabaseOperationException("Book table is not empty");
         }
+        authorRepo.deleteAll();
     }
 }

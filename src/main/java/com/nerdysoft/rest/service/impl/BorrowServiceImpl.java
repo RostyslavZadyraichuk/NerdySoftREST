@@ -14,6 +14,8 @@ import com.nerdysoft.rest.service.MemberService;
 import com.nerdysoft.rest.service.mapper.BookMapper;
 import com.nerdysoft.rest.service.mapper.BorrowMapper;
 import com.nerdysoft.rest.service.mapper.MemberMapper;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,9 @@ public class BorrowServiceImpl implements BorrowService {
     private MemberService memberService;
     private BookService bookService;
 
+    @Value("${max.borrow.amount}")
+    private int maxBorrowAmount;
+
     public BorrowServiceImpl(BorrowRepository borrowRepo,
                              BorrowMapper borrowMapper,
                              MemberMapper memberMapper,
@@ -45,7 +50,7 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public BorrowDTO create(BorrowDTO borrow) {
+    public BorrowDTO create(@Valid BorrowDTO borrow) {
         Optional<BookDTO> bookOpt = bookService.findByTitleAndAuthor(
                 borrow.getBook().getTitle(), borrow.getBook().getAuthor());
         if (bookOpt.isEmpty()) {
@@ -62,7 +67,19 @@ public class BorrowServiceImpl implements BorrowService {
         BookDTO book = bookOpt.get();
         MemberDTO member = memberOpt.get();
 
-        memberService.borrowBook(member, book);
+        if (book.getAmount() == 0) {
+            throw new DatabaseOperationException(String.format("Book's %s amount is zero",
+                    book.getTitle()));
+        }
+
+        List<BorrowDTO> borrowed = findByMember(member);
+        if (borrowed.size() == maxBorrowAmount) {
+            throw new DatabaseOperationException(String.format("Member %s already has %d borrowed books",
+                    member.getName(), maxBorrowAmount));
+        }
+
+        book.setAmount(book.getAmount() - 1);
+        book = bookService.update(book);
         borrow.setBook(book);
         borrow.setMember(member);
         Borrow entity = borrowMapper.toEntity(borrow);
@@ -71,10 +88,12 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public void delete(BorrowDTO borrow) {
-        Optional<BorrowDTO> optional = findById(borrow);
+        Optional<BorrowDTO> optional = findById(borrow.getId());
         if (optional.isPresent()) {
             BorrowDTO borrowDTO = optional.get();
-            memberService.returnBook(borrowDTO.getMember(), borrowDTO.getBook());
+            BookDTO book = borrowDTO.getBook();
+            book.setAmount(book.getAmount() + 1);
+            bookService.update(book);
             Borrow entity = borrowMapper.toEntity(borrow);
             borrowRepo.delete(entity);
         }
@@ -88,8 +107,8 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public Optional<BorrowDTO> findById(BorrowDTO borrow) {
-        Optional<Borrow> optional = borrowRepo.findById(borrow.getId());
+    public Optional<BorrowDTO> findById(int id) {
+        Optional<Borrow> optional = borrowRepo.findById(id);
         if (optional.isPresent()) {
             return Optional.of(borrowMapper.toDTO(optional.get()));
         }
@@ -122,5 +141,10 @@ public class BorrowServiceImpl implements BorrowService {
             return Optional.of(borrowMapper.toDTO(optional.get()));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void deleteAll() {
+        borrowRepo.deleteAll();
     }
 }

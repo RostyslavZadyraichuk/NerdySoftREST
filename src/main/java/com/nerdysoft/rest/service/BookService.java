@@ -27,4 +27,6 @@ public interface BookService {
     List<BookDTO> findAllDistinct();
 
     List<BookDTO> findAllBorrowedDistinct();
+
+    void deleteAll();
 }

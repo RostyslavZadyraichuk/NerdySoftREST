@@ -21,8 +21,8 @@ public class MainController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
-    public ResponseEntity<String> handleDatabaseIntegrityException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body("Deletion is forbidden: Primary key of record is used in another table");
+    public ResponseEntity<String> handleDatabaseIntegrityException() {
+        return ResponseEntity.badRequest().body("Operation is forbidden: Primary key of record is used in another table");
     }
 
 }

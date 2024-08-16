@@ -15,7 +15,7 @@ public class Book implements Serializable {
     private String title;
 
     @Column(nullable = false)
-    private int amount = 1;
+    private int amount;
 
     @ManyToOne
     private Author author;

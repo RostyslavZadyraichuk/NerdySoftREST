@@ -9,8 +9,8 @@ import com.nerdysoft.rest.repository.BookRepository;
 import com.nerdysoft.rest.service.AuthorService;
 import com.nerdysoft.rest.service.BookService;
 import com.nerdysoft.rest.service.BorrowService;
-import com.nerdysoft.rest.service.mapper.AuthorMapper;
 import com.nerdysoft.rest.service.mapper.BookMapper;
+import jakarta.validation.Valid;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -24,22 +24,19 @@ public class BookServiceImpl implements BookService {
     private BorrowService borrowService;
     private AuthorService authorService;
     private BookMapper bookMapper;
-    private AuthorMapper authorMapper;
 
     public BookServiceImpl(BookRepository bookRepo,
                            BorrowService borrowService,
                            @Lazy AuthorService authorService,
-                           BookMapper bookMapper,
-                           AuthorMapper authorMapper) {
+                           BookMapper bookMapper) {
         this.bookRepo = bookRepo;
         this.borrowService = borrowService;
         this.authorService = authorService;
         this.bookMapper = bookMapper;
-        this.authorMapper = authorMapper;
     }
 
     @Override
-    public BookDTO create(BookDTO book) {
+    public BookDTO create(@Valid BookDTO book) {
         Optional<AuthorDTO> optional = authorService.findByName(book.getAuthor().getName());
         if (optional.isPresent()) {
             Optional<Book> found = bookRepo.findByTitleAndAuthorName(book.getTitle(),
@@ -57,7 +54,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO update(BookDTO book) {
+    public BookDTO update(@Valid BookDTO book) {
         Optional<AuthorDTO> optional = authorService.findByName(book.getAuthor().getName());
         if (optional.isPresent()) {
             book.setAuthor(optional.get());
@@ -131,5 +128,14 @@ public class BookServiceImpl implements BookService {
         return bookRepo.findAllDistinctBorrowedBooks().stream()
                 .map(bookMapper::toDTO)
                 .toList();
+    }
+
+    @Override
+    public void deleteAll() {
+        List<BorrowDTO> borrows = borrowService.findAll();
+        if (!borrows.isEmpty()) {
+            throw new DatabaseOperationException("Borrow table is not empty");
+        }
+        bookRepo.deleteAll();
     }
 }

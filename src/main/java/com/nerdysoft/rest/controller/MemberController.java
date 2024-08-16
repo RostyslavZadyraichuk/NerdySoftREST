@@ -32,7 +32,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/create")
-    public ResponseEntity<String> createMember(@RequestBody @Valid MemberDTO member,
+    public ResponseEntity<String> createMember(@RequestBody MemberDTO member,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
@@ -43,7 +43,7 @@ public class MemberController {
     }
 
     @PostMapping("/member/update")
-    public ResponseEntity<String> updateMember(@RequestBody @Valid MemberDTO member,
+    public ResponseEntity<String> updateMember(@RequestBody MemberDTO member,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());

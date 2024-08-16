@@ -15,7 +15,7 @@ public interface BorrowService {
 
     List<BorrowDTO> findAll();
 
-    Optional<BorrowDTO> findById(BorrowDTO borrow);
+    Optional<BorrowDTO> findById(int id);
 
     List<BorrowDTO> findByMember(MemberDTO member);
 
@@ -23,4 +23,5 @@ public interface BorrowService {
 
     Optional<BorrowDTO> findFirstByMemberAndBook(MemberDTO member, BookDTO book);
 
+    void deleteAll();
 }

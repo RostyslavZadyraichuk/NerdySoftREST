@@ -3,7 +3,6 @@ package com.nerdysoft.rest.controller;
 import com.nerdysoft.rest.dto.AuthorDTO;
 import com.nerdysoft.rest.dto.BookDTO;
 import com.nerdysoft.rest.service.BookService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -34,7 +33,7 @@ public class BookController {
     }
 
     @PostMapping("/book/create")
-    public ResponseEntity<String> createBook(@RequestBody @Valid BookDTO book,
+    public ResponseEntity<String> createBook(@RequestBody BookDTO book,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
@@ -45,7 +44,7 @@ public class BookController {
     }
 
     @PostMapping("/book/update")
-    public ResponseEntity<String> updateBook(@RequestBody @Valid BookDTO book,
+    public ResponseEntity<String> updateBook(@RequestBody BookDTO book,
                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
