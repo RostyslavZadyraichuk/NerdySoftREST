@@ -2,15 +2,16 @@ package com.nerdysoft.rest.service;
 
 import com.nerdysoft.rest.dto.BookDTO;
 import com.nerdysoft.rest.dto.MemberDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberService {
 
-    MemberDTO create(MemberDTO member);
+    MemberDTO create(@Valid MemberDTO member);
 
-    MemberDTO update(MemberDTO member);
+    MemberDTO update(@Valid MemberDTO member);
 
     Optional<MemberDTO> findById(int id);
 

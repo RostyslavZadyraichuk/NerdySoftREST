@@ -13,11 +13,13 @@ import com.nerdysoft.rest.service.mapper.BookMapper;
 import jakarta.validation.Valid;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Validated
 public class BookServiceImpl implements BookService {
 
     private BookRepository bookRepo;

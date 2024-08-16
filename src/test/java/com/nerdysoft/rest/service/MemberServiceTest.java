@@ -103,7 +103,7 @@ public class MemberServiceTest {
         assertEquals(1, members.size());
 
         AuthorDTO author = new AuthorDTO();
-        author.setName("Author");
+        author.setName("Author Author");
         BookDTO book = new BookDTO();
         book.setTitle("Title");
         book.setAuthor(author);
@@ -193,7 +193,7 @@ public class MemberServiceTest {
         assertEquals(2, members.size());
 
         AuthorDTO author = new AuthorDTO();
-        author.setName("Author");
+        author.setName("Author Author");
         BookDTO book = new BookDTO();
         book.setTitle("Title");
         book.setAuthor(author);

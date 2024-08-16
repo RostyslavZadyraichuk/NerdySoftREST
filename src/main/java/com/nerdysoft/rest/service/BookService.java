@@ -2,15 +2,16 @@ package com.nerdysoft.rest.service;
 
 import com.nerdysoft.rest.dto.AuthorDTO;
 import com.nerdysoft.rest.dto.BookDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BookService {
 
-    BookDTO create(BookDTO book);
+    BookDTO create(@Valid BookDTO book);
 
-    BookDTO update(BookDTO book);
+    BookDTO update(@Valid BookDTO book);
 
     Optional<BookDTO> findById(int id);
 

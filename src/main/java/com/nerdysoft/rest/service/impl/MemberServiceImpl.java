@@ -11,12 +11,14 @@ import com.nerdysoft.rest.service.MemberService;
 import com.nerdysoft.rest.service.mapper.MemberMapper;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Validated
 public class MemberServiceImpl implements MemberService {
 
     private MemberRepository memberRepo;

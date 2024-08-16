@@ -31,23 +31,13 @@ public class MemberController {
     }
 
     @PostMapping("/member/create")
-    public ResponseEntity<String> createMember(@RequestBody MemberDTO member,
-                                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
-        }
-
+    public ResponseEntity<String> createMember(@RequestBody MemberDTO member) {
         memberService.create(member);
         return ResponseEntity.ok("Member created successfully");
     }
 
     @PostMapping("/member/update")
-    public ResponseEntity<String> updateMember(@RequestBody MemberDTO member,
-                                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
-        }
-
+    public ResponseEntity<String> updateMember(@RequestBody MemberDTO member) {
         memberService.update(member);
         return ResponseEntity.ok("Member updated successfully");
     }

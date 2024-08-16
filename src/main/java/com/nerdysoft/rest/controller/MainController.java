@@ -1,8 +1,10 @@
 package com.nerdysoft.rest.controller;
 
 import com.nerdysoft.rest.error.DatabaseOperationException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
@@ -21,8 +23,13 @@ public class MainController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
-    public ResponseEntity<String> handleDatabaseIntegrityException() {
-        return ResponseEntity.badRequest().body("Operation is forbidden: Primary key of record is used in another table");
+    public ResponseEntity<String> handleDatabaseException() {
+        return ResponseEntity.badRequest().body("Insert operation is forbidden");
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleDatabaseException(ConstraintViolationException e) {
+        return ResponseEntity.badRequest().body(e.getConstraintViolations().iterator().next().getMessage());
+    }
 }
