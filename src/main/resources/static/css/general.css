@@ -1,0 +1,17 @@
+.error {
+    color: red;
+    border-color: red;
+}
+
+.buttons button {
+    display: inline-block;
+    margin: 5px;
+}
+
+.display-none {
+    display: none;
+}
+
+.links {
+    margin: 30px;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Borrows</title>
+    <link rel="stylesheet" href="./css/general.css">
+</head>
+<body>
+    <nav class="links">
+        <a href="/members">Members Table</a>
+        <a href="/books">Books Table</a>
+        <a href="/borrows">Borrows Table</a>
+    </nav>
+    <h2>Borrows</h2>
+    <div class="buttons">
+        <button id="create">Create</button>
+        <button id="find">Find</button>
+        <button id="delete">Delete</button>
+    </div>
+    <p id="error-message" class="error"></p>
+    <div class="forms">
+        <form id="form">
+            <span id="form-id" class="display-none">
+                <label for="borrow-id">ID</label>
+                <input id="borrow-id" type="text">
+            </span>
+            <span id="form-book-title">
+                <label for="book-title">Book Title</label>
+                <input id="book-title" type="text">
+            </span>
+            <span id="form-book-author">
+                <label for="book-author">Book Author</label>
+                <input id="book-author" type="text">
+            </span>
+            <span id="form-member">
+                <label for="member-name">Member Name</label>
+                <input id="member-name" type="text">
+            </span>
+            <input id="submit" type="submit" value="Create">
+        </form>
+    </div>
+    <hr>
+    <div class="container">
+
+    </div>
+</body>
+<script src="./js/borrows.js"></script>
+</html>
