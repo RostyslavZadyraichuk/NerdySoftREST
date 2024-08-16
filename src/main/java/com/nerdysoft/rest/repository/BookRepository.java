@@ -1,6 +1,5 @@
 package com.nerdysoft.rest.repository;
 
-import com.nerdysoft.rest.entity.Author;
 import com.nerdysoft.rest.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

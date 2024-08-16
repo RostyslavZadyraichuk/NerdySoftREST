@@ -6,12 +6,10 @@ import com.nerdysoft.rest.dto.MemberDTO;
 import com.nerdysoft.rest.entity.Member;
 import com.nerdysoft.rest.error.DatabaseOperationException;
 import com.nerdysoft.rest.repository.MemberRepository;
-import com.nerdysoft.rest.service.BookService;
 import com.nerdysoft.rest.service.BorrowService;
 import com.nerdysoft.rest.service.MemberService;
 import com.nerdysoft.rest.service.mapper.MemberMapper;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,16 +20,13 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private MemberRepository memberRepo;
-    private BookService bookService;
     private MemberMapper memberMapper;
     private BorrowService borrowService;
 
     public MemberServiceImpl(MemberRepository memberRepo,
-                             BookService bookService,
                              MemberMapper memberMapper,
                              BorrowService borrowService) {
         this.memberRepo = memberRepo;
-        this.bookService = bookService;
         this.memberMapper = memberMapper;
         this.borrowService = borrowService;
     }

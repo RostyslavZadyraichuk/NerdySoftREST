@@ -2,7 +2,6 @@ package com.nerdysoft.rest.controller;
 
 import com.nerdysoft.rest.dto.MemberDTO;
 import com.nerdysoft.rest.service.MemberService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
